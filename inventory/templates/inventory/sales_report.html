@@ -1,0 +1,78 @@
+{% extends 'inventory/base.html' %}
+
+{% block header %}Sales Report{% endblock %}
+
+{% block actions %}
+    <div class="btn-group">
+        <a href="{% url 'sell_product' %}" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Record New Sale
+        </a>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body">
+                <h6 class="card-title">Total Items Sold</h6>
+                <h3 class="card-text">{{ total_sales.total_quantity|default:0 }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body">
+                <h6 class="card-title">Total Revenue</h6>
+                <h3 class="card-text">${{ total_sales.total_revenue|default:0|floatformat:2 }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-info mb-3">
+            <div class="card-body">
+                <h6 class="card-title">Total Profit</h6>
+                <h3 class="card-text">${{ total_sales.total_profit|default:0|floatformat:2 }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Sales History</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Total Amount</th>
+                        <th>Profit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sale in sales %}
+                    <tr>
+                        <td>{{ sale.sale_date|date:"M d, Y H:i" }}</td>
+                        <td>{{ sale.product.name }}</td>
+                        <td>{{ sale.quantity_sold }}</td>
+                        <td>${{ sale.product.selling_price|floatformat:2 }}</td>
+                        <td>${{ sale.total_sale_amount|floatformat:2 }}</td>
+                        <td>${{ sale.profit|floatformat:2 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center">No sales recorded yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

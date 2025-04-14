@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Manager - {% block title %}{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .card-dashboard {
+            transition: transform 0.2s;
+        }
+
+        .card-dashboard:hover {
+            transform: translateY(-5px);
+        }
+
+        .sidebar {
+            min-height: 100vh;
+        }
+
+        .out-of-stock {
+            color: #dc3545;
+        }
+
+        .low-stock {
+            color: #ffc107;
+        }
+
+        .in-stock {
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar for large devices -->
+            <nav class="col-md-2 d-none d-md-block bg-dark sidebar">
+
+                {% if user.is_authenticated%}
+                <div class="sidebar-sticky pt-3">
+                    <h4 class="text-white px-3">Inventory Manager</h4>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-white {% if request.resolver_match.url_name == 'home' %}active{% endif %}" 
+                               href="{% url 'home' %}">
+                                <i class="bi bi-speedometer2"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white {% if request.resolver_match.url_name == 'product_list' %}active{% endif %}" 
+                               href="{% url 'product_list' %}">
+                                <i class="bi bi-box-seam"></i> Products
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white {% if request.resolver_match.url_name == 'sell_product' %}active{% endif %}" 
+                               href="{% url 'sell_product' %}">
+                                <i class="bi bi-cash-stack"></i> Record Sale
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white {% if request.resolver_match.url_name == 'sales_report' %}active{% endif %}" 
+                               href="{% url 'sales_report' %}">
+                                <i class="bi bi-graph-up"></i> Sales Report
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white {% if request.resolver_match.url_name == 'manage_categories' %}active{% endif %}" 
+                               href="{% url 'manage_categories' %}">
+                                <i class="bi bi-tags"></i> Categories
+                            </a>
+                        </li>
+                    </ul>
+                    <hr class="bg-light">
+                    <div class="px-3">
+                        <span class="text-white">Logged in as: {{ request.user.username }}</span>
+                        <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-light mt-2 w-100">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="sidebar-sticky pt-3">
+                    <h4 class="text-white px-3">Inventory Manager</h4>
+                    <ul class="nav flex-column">
+                        
+                       
+                        <li class="nav-item">
+                            <a class="nav-link text-white" 
+                               href="{% url 'register' %}">
+                                <i class="bi bi-user"></i> Register
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" 
+                               href="{% url 'login' %}">
+                                <i class="bi bi"></i> Login
+                            </a>
+                        </li>
+                    </ul>
+                    <hr class="bg-light">
+                    
+                </div>
+              
+                {%endif%}
+
+
+              
+            </nav>
+
+            <!-- Navbar for small devices -->
+            <nav class="navbar navbar-expand-md navbar-dark bg-dark d-md-none">
+
+
+                {% if user.is_authenticated%}
+              
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="#">Inventory Manager</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu" aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarMenu">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link text-white {% if request.resolver_match.url_name == 'home' %}active{% endif %}" 
+                                   href="{% url 'home' %}">
+                                    <i class="bi bi-speedometer2"></i> Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white {% if request.resolver_match.url_name == 'product_list' %}active{% endif %}" 
+                                   href="{% url 'product_list' %}">
+                                    <i class="bi bi-box-seam"></i> Products
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white {% if request.resolver_match.url_name == 'sell_product' %}active{% endif %}" 
+                                   href="{% url 'sell_product' %}">
+                                    <i class="bi bi-cash-stack"></i> Record Sale
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white {% if request.resolver_match.url_name == 'sales_report' %}active{% endif %}" 
+                                   href="{% url 'sales_report' %}">
+                                    <i class="bi bi-graph-up"></i> Sales Report
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white {% if request.resolver_match.url_name == 'manage_categories' %}active{% endif %}" 
+                                   href="{% url 'manage_categories' %}">
+                                    <i class="bi bi-tags"></i> Categories
+                                </a>
+                            </li>
+                        </ul>
+                        <hr class="bg-light">
+                        <div class="px-3">
+                            <span class="text-white">Logged in as: {{ request.user.username }}</span>
+                            <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-light mt-2 w-100">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% else%}
+                <a href="{% url 'register'%}" class="btn btn-outline-success mx-3" >Register</a>
+                <a href="{% url 'login'%}" class="btn btn-outline-warning" >Login</a>
+                {%endif%}
+
+
+            </nav>
+
+            <!-- Main content -->
+            <main role="main" class="col-md-10 ms-sm-auto col-lg-10 px-4 py-4">
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">{% block header %}{% endblock %}</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        {% block actions %}{% endblock %}
+                    </div>
+                </div>
+
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

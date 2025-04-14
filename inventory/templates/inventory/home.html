@@ -1,0 +1,206 @@
+
+
+{% extends 'inventory/base.html' %}
+{% load math_filters %}
+{% block header %}Dashboard{% endblock %}
+
+{% block actions %}
+    <div class="btn-group me-2">
+        <a href="{% url 'add_product' %}" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-plus-circle"></i> Add Product
+        </a>
+        <a href="{% url 'sell_product' %}" class="btn btn-sm btn-outline-success">
+            <i class="bi bi-cash"></i> Record Sale
+        </a>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <!-- Summary Cards -->
+    <div class="col-md-3 mb-3">
+        <div class="card card-dashboard bg-primary text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title text-uppercase">Products</h6>
+                        <h2 class="mb-0">{{ total_products }}</h2>
+                    </div>
+                    <i class="bi bi-box-seam" style="font-size: 2rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card card-dashboard bg-success text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title text-uppercase">In Stock</h6>
+                        <h2 class="mb-0">{{ total_items_in_stock }}</h2>
+                    </div>
+                    <i class="bi bi-check-circle" style="font-size: 2rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card card-dashboard bg-info text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title text-uppercase">Items Sold</h6>
+                        <h2 class="mb-0">{{ total_items_sold }}</h2>
+                    </div>
+                    <i class="bi bi-cart-check" style="font-size: 2rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card card-dashboard bg-warning text-dark h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title text-uppercase">Total Profit</h6>
+                        <h2 class="mb-0">${{ total_profit|floatformat:2 }}</h2>
+                    </div>
+                    <i class="bi bi-currency-dollar" style="font-size: 2rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Financial Summary -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">Financial Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <tbody>
+                            <tr>
+                                <th>Total Purchase Value</th>
+                                <td class="text-end">${{ total_purchase_value|floatformat:2 }}</td>
+                            </tr>
+                            <tr>
+                                <th>Total Sales Value</th>
+                                <td class="text-end">${{ total_sales_value|floatformat:2 }}</td>
+                            </tr>
+                            <tr>
+                                <th>Total Profit</th>
+                                <td class="text-end">${{ total_profit|floatformat:2 }}</td>
+                            </tr>
+                            <tr>
+                                <th>Profit Margin</th>
+                                <td class="text-end">
+                                    {% if total_sales_value > 0 %}
+                                    {{ total_profit|div:total_sales_value|mul:100|floatformat:2 }}%
+                                    {% else %}
+                                        0%
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Low Stock Alert -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">Low Stock Alert</h5>
+            </div>
+            <div class="card-body">
+                {% if low_stock_products %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Current Stock</th>
+                                    <th>Reorder Level</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in low_stock_products %}
+                                <tr>
+                                    <td>{{ product.name }}</td>
+                                    <td>{{ product.quantity }}</td>
+                                    <td>{{ product.reorder_level }}</td>
+                                    <td>
+                                        <span class="{{ product.stock_status }}">
+                                            {{ product.stock_status|title }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-success mb-0">
+                        <i class="bi bi-check-circle-fill"></i> All products are sufficiently stocked.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Sales -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Recent Sales</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_sales %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>Unit Price</th>
+                                    <th>Total Amount</th>
+                                    <th>Profit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sale in recent_sales %}
+                                <tr>
+                                    <td>{{ sale.sale_date|date:"M d, Y H:i" }}</td>
+                                    <td>{{ sale.product.name }}</td>
+                                    <td>{{ sale.quantity_sold }}</td>
+                                    <td>${{ sale.product.selling_price|floatformat:2 }}</td>
+                                    <td>${{ sale.total_sale_amount|floatformat:2 }}</td>
+                                    <td>${{ sale.profit|floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info mb-0">
+                        <i class="bi bi-info-circle-fill"></i> No sales recorded yet.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'inventory/base.html' %}
+{% load crispy_forms_tags%}
+{% block header %}Sell Product{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h5>Sell {{ product.name }}</h5>
+        <p>Current Stock: {{ product.quantity }}</p>
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy}}
+            <button type="submit" class="btn btn-primary">Sell 1 Unit</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

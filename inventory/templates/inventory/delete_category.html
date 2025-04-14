@@ -1,0 +1,15 @@
+{% extends 'inventory/base.html' %}
+{% block header %}Delete Category{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <p>Are you sure you want to delete the category "{{ category.name }}"?</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+            <a href="{% url 'manage_categories' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
